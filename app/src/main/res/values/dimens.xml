@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="standard_margin">8dp</dimen>
+    <dimen name="address_text_size">22sp</dimen>
+    <dimen name="address_block_height">100dp</dimen>
+    <dimen name="phone_block_height">300dp</dimen>
+</resources>
