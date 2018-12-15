@@ -21,6 +21,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
+
+        MainFragment messageFragment = new MainFragment();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.activity_main_frame, messageFragment)
+                .commit();
+
         setupUi();
     }
 
@@ -31,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         unbindUx();
     }
 
