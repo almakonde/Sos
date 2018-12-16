@@ -2,14 +2,17 @@ package msk.android.academy.javatemplate;
 
 import android.Manifest;
 import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
 
     private static final int LAYOUT = R.layout.activity_main;
     private static final String TAG = MainActivity.class.getCanonicalName();
+    public static final int REQUEST_LOCATION_PERMISSION = 123;
+    private static final int PERMISSION_SEND_SMS = 124;
 
     private ImageView phoneBlock;
     private TextView addressText;
@@ -37,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
     private boolean mTrackingLocation = false;
     private LocationCallback mLocationCalback;
 
+    String phone;
+    String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,15 +112,33 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         }
     }
 
-    private void findViews() {
-        phoneBlock = findViewById(R.id.phone_block);
-        addressText = findViewById(R.id.address_text);
-        infoView = findViewById(R.id.infoView);
+    private void requestSmsPermission(Activity activity, String phone, String message) {
+        // check permission is given
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            // request permission (see result in onRequestPermissionsResult() method)
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    PERMISSION_SEND_SMS);
+        } else {
+            // permission already granted run sms send
+            sendSms(phone, message);
+        }
     }
 
+    public void sendSms(String phoneNumber, String message){
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, null, null);
+        Toast.makeText(App.getInstance().getApplicationContext(), "SMS Sent!",
+                Toast.LENGTH_LONG).show();
+    }
+
+    private void initPhoneandSms(){
+        phone = "+79998440758";
+        message = "Я в опасносности по адресу " + mLocationTextView.getText();
+    }
 
     private void startTrackingLocation() {
-//        mRotateAnim.start();
         mTrackingLocation = true;
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -127,10 +152,12 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
                     null);
         }
     }
+
     private void stopTrackingLocation() {
         mTrackingLocation = false;
         mFusedLocationClient.removeLocationUpdates(mLocationCalback);
     }
+
     private LocationRequest getLocationRequest(){
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(10000);
@@ -138,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
-    public static final int REQUEST_LOCATION_PERMISSION = 123;
 
     private void getLocation(){
         if (ActivityCompat.checkSelfPermission(this,
@@ -166,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
                     });
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -181,11 +208,27 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
                             Toast.LENGTH_LONG).show();
                 }
                 break;
+            case PERMISSION_SEND_SMS: {
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    sendSms(phone, message);
+                } else {
+                    // permission denied
+                }
+                return;
+            }
         }
     }
     @Override
     public void onTaskComplite(String result) {
         stopTrackingLocation();
         mLocationTextView.setText(result);
+    }
+
+    private void findViews() {
+        phoneBlock = findViewById(R.id.phone_block);
+        addressText = findViewById(R.id.address_text);
+        infoView = findViewById(R.id.infoView);
     }
 }
