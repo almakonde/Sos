@@ -85,11 +85,6 @@ public class DocumentFragment extends Fragment implements DocumentRecyclerAdapte
 
     @Override
     public void onItemClick(String path) {
-//        DocumentFullPhotoFragment documentFullPhotoFragment = DocumentFullPhotoFragment.newInstanse(path);
-//        getChildFragmentManager().beginTransaction()
-//                .add(R.id.container_ololo, documentFullPhotoFragment, "aaa")
-//                .addToBackStack(null)
-//                .commit();
         DocumentFullPhotoActivity.start(getActivity(), path);
     }
 }
