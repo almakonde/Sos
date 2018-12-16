@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
@@ -50,7 +54,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:$jetpack_version"
 
     //Firebase
-    implementation "com.google.firebase:firebase-core:$firebase_core_version"
+//    implementation "com.google.firebase:firebase-core:$firebase_core_version"
 
     //Glide
     implementation "com.github.bumptech.glide:glide:$glide_version"
