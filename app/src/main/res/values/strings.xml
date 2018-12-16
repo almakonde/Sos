@@ -10,4 +10,12 @@
         <item>SMS</item>
         <item>Вызов</item>
     </string-array>
+    <string name="actions">Действия</string>
+    <string name="documents">Документы</string>
+    <string name="settings">Настройки</string>
+    <string name="location_text">"Latitude: %1$.4f \n Longitude: %2$.4f\n Timestamp: %3$tr"</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>
