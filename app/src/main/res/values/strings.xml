@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">JavaTemplate</string>
+    <string name="title_action_type">Тип оповещения: \t</string>
+    <string name="title_action_notifiable_users">Будут оповещены: \t</string>
+    <string name="title_add_user">Добавить пользователя</string>
+    <string name="sms">СМС</string>
+    <string name="phone_calling">Вызов</string>
+
+    <string-array name="action_types">
+        <item>SMS</item>
+        <item>Вызов</item>
+    </string-array>
 </resources>
