@@ -38,6 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setupUi() {
+        setTitle(getString(R.string.settings));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         findViews();
     }
