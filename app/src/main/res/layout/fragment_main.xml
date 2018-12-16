@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
 
     <ImageView
@@ -26,7 +25,6 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:lines="3"
-        android:text="Академика Сахарова, 23, 43-45-45-45-45-45-45-45-45-45-45-45-4-5-45-45--45-45-45-45-4-5-4-545--45-4-5--45-4-5-"
         android:textSize="@dimen/address_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/location_icon"

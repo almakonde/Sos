@@ -63,7 +63,7 @@ dependencies {
     //Gson
     implementation "com.google.code.gson:gson:$gson_version"
     implementation "com.android.support.constraint:constraint-layout:1.0.2"
-    implementation "com.google.android.gms:play-services-location:11.8.0"
+    implementation "com.google.android.gms:play-services-location:16.0.0"
 }
 
 //Uncomment to use firebase
