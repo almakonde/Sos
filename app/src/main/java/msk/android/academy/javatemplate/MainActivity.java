@@ -7,11 +7,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.ImageView;
@@ -25,25 +25,26 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import msk.android.academy.javatemplate.presentation.useractions.models.ActionModel;
+import msk.android.academy.javatemplate.presentation.useractions.models.AlarmAction;
+import msk.android.academy.javatemplate.presentation.useractions.models.Contact;
+
 public class MainActivity extends AppCompatActivity implements FetchADressTask.OnTaskComplite {
 
+    public static final int REQUEST_LOCATION_PERMISSION = 123;
     private static final int LAYOUT = R.layout.activity_main;
     private static final String TAG = MainActivity.class.getCanonicalName();
-    public static final int REQUEST_LOCATION_PERMISSION = 123;
     private static final int PERMISSION_SEND_SMS = 124;
-
+    String phone;
+    String message;
     private ImageView phoneBlock;
     private TextView addressText;
     private ImageView infoView;
-
     private TextView mLocationTextView;
     private FusedLocationProviderClient mFusedLocationClient;
     private AnimatorSet mRotateAnim;
     private boolean mTrackingLocation = false;
     private LocationCallback mLocationCalback;
-
-    String phone;
-    String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationTextView = (TextView) findViewById(R.id.address_text);
-        mLocationCalback = new LocationCallback(){
+        mLocationCalback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 new FetchADressTask(MainActivity.this,
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
                         .execute(locationResult.getLastLocation());
             }
         };
-        if (!mTrackingLocation){
+        if (!mTrackingLocation) {
             startTrackingLocation();
         } else {
             stopTrackingLocation();
@@ -88,21 +89,80 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         unbindUx();
     }
 
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getLocation();
+                } else {
+                    Toast.makeText(this,
+                            "Нет разрешения на испольщование Location",
+                            Toast.LENGTH_LONG).show();
+                }
+                break;
+            case PERMISSION_SEND_SMS: {
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    sendSms(phone, message);
+                } else {
+                    // permission denied
+                }
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onTaskComplite(String result) {
+        stopTrackingLocation();
+        mLocationTextView.setText(result);
+    }
+
+    public void sendSms(String phoneNumber, String message) {
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, null, null);
+        Toast.makeText(App.getInstance().getApplicationContext(), "SMS Sent!",
+                Toast.LENGTH_LONG).show();
+    }
+
     private void unbindUx() {
         phoneBlock.setOnClickListener(null);
     }
-
 
     private void setupUi() {
         findViews();
     }
 
     private void setupUx() {
-        phoneBlock.setOnClickListener(v -> callPhone("103"));
+        phoneBlock.setOnClickListener(v -> {
+            Optional<AlarmAction> alarmAction = App.getInstance().getDatabase().getActive();
+
+            if (alarmAction.isPresent()) {
+                ActionModel act = alarmAction.get().getModel();
+                if (act.getType() == ActionModel.Type.SMS) {
+                    for (Contact contact : act.getContacts()) {
+                        initPhoneandSms();
+                        phone = contact.getPhoneNumber();
+                        requestSmsPermission("+7" + phone, message);
+                    }
+                } else {
+                    callPhone("+7" + (alarmAction.get().getModel().getContacts().get(
+                            0).getPhoneNumber()));
+                }
+            }
+        });
         infoView.setOnClickListener(v -> SettingsActivity.start(this));
     }
 
-    private void callPhone(String phone){
+    private void callPhone(String phone) {
         final Intent intent = new Intent(Intent.ACTION_DIAL)
                 .setData(Uri.parse(String.format("tel: %s", phone)));
         if (intent.resolveActivity(getPackageManager()) != null) {
@@ -112,12 +172,12 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         }
     }
 
-    private void requestSmsPermission(Activity activity, String phone, String message) {
+    private void requestSmsPermission(String phone, String message) {
         // check permission is given
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_CONTACTS)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             // request permission (see result in onRequestPermissionsResult() method)
-            ActivityCompat.requestPermissions(activity,
+            ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.SEND_SMS},
                     PERMISSION_SEND_SMS);
         } else {
@@ -126,15 +186,8 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         }
     }
 
-    public void sendSms(String phoneNumber, String message){
-        SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber, null, message, null, null);
-        Toast.makeText(App.getInstance().getApplicationContext(), "SMS Sent!",
-                Toast.LENGTH_LONG).show();
-    }
-
-    private void initPhoneandSms(){
-        phone = "+79998440758";
+    private void initPhoneandSms() {
+//        phone = "+79998440758";
         message = "Я в опасносности по адресу " + mLocationTextView.getText();
     }
 
@@ -142,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         mTrackingLocation = true;
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED){
+                PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
                             {Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_PERMISSION);
@@ -158,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         mFusedLocationClient.removeLocationUpdates(mLocationCalback);
     }
 
-    private LocationRequest getLocationRequest(){
+    private LocationRequest getLocationRequest() {
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
@@ -166,64 +219,33 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         return locationRequest;
     }
 
-    private void getLocation(){
+    private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED){
+                PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
                             {Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_PERMISSION);
         } else {
             mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null){
-                                new FetchADressTask(MainActivity.this,
-                                        MainActivity.this).execute(location);
-                                mLocationTextView.setText(getString(R.string.location_text,
-                                        location.getLatitude(),
-                                        location.getLongitude(),
-                                        location.getTime()));
-                            } else {
-                                mLocationTextView.setText("Нет последней известной позиции");
-                            }
-                        }
-                    });
+                                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                                    @Override
+                                    public void onSuccess(Location location) {
+                                        if (location != null) {
+                                            new FetchADressTask(MainActivity.this,
+                                                    MainActivity.this).execute(location);
+                                            mLocationTextView.setText(
+                                                    getString(R.string.location_text,
+                                                            location.getLatitude(),
+                                                            location.getLongitude(),
+                                                            location.getTime()));
+                                        } else {
+                                            mLocationTextView.setText(
+                                                    "Нет последней известной позиции");
+                                        }
+                                    }
+                                });
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        switch (requestCode){
-            case REQUEST_LOCATION_PERMISSION:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    getLocation();
-                } else {
-                    Toast.makeText(this,
-                            "Нет разрешения на испольщование Location",
-                            Toast.LENGTH_LONG).show();
-                }
-                break;
-            case PERMISSION_SEND_SMS: {
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted
-                    sendSms(phone, message);
-                } else {
-                    // permission denied
-                }
-                return;
-            }
-        }
-    }
-    @Override
-    public void onTaskComplite(String result) {
-        stopTrackingLocation();
-        mLocationTextView.setText(result);
     }
 
     private void findViews() {
