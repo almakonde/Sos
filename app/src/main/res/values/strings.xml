@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">JavaTemplate</string>
     <string name="title_action_type">Тип оповещения: \t</string>
     <string name="title_action_notifiable_users">Будут оповещены: \t</string>
     <string name="title_add_user">Добавить пользователя</string>
@@ -10,6 +9,7 @@
         <item>SMS</item>
         <item>Вызов</item>
     </string-array>
+    <string name="app_name">Sos</string>
     <string name="actions">Действия</string>
     <string name="documents">Документы</string>
     <string name="settings">Настройки</string>
