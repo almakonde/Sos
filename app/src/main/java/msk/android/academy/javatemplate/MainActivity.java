@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView phoneBlock;
     private TextView addressText;
+    private ImageView infoView;
 
 
     @Override
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupUx() {
         phoneBlock.setOnClickListener(v -> callPhone("103"));
+        infoView.setOnClickListener(v -> SettingsActivity.start(this));
     }
 
     private void callPhone(String phone){
@@ -70,5 +72,6 @@ public class MainActivity extends AppCompatActivity {
     private void findViews() {
         phoneBlock = findViewById(R.id.phone_block);
         addressText = findViewById(R.id.address_text);
+        infoView = findViewById(R.id.infoView);
     }
 }
