@@ -19,8 +19,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".presentation.useractions.screens.UserActionsActivity"
-            android:hardwareAccelerated="false"
-            android:largeHeap="true"
+
             android:theme="@style/NoActionBarAppTheme"/>
 
         <activity
@@ -38,6 +37,8 @@
         </activity>
         <activity
             android:name=".documents.DocumentMainActivity"
+            android:hardwareAccelerated="false"
+            android:largeHeap="true"
             android:screenOrientation="sensorPortrait">
         </activity>
         <activity android:name=".documents.DocumentFullPhotoActivity"/>

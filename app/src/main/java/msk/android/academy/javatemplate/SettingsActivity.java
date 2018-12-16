@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import msk.android.academy.javatemplate.documents.DocumentMainActivity;
+import msk.android.academy.javatemplate.presentation.useractions.screens.UserActionsActivity;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final int LAYOUT = R.layout.activity_settings;
@@ -46,7 +47,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setupUx() {
-        actionsItem.setOnClickListener(v -> {});
+        actionsItem.setOnClickListener(v -> UserActionsActivity.start(this));
         documentsItem.setOnClickListener(v -> DocumentMainActivity.start(this));
     }
 

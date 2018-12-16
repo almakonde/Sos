@@ -93,6 +93,8 @@ public class UserActionsFragment extends Fragment {
         toolbar.setTitle("Действия");
         fabNewAction = view.findViewById(R.id.fabNewAction);
         fabNewAction.setOnClickListener(v -> openAction(null, ActionEditingMode.NEW));
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
     }
 
     private void initAdapter() {
@@ -116,6 +118,7 @@ public class UserActionsFragment extends Fragment {
         rvActionsList.setLayoutManager(lm);
         rvActionsList.addItemDecoration(
                 new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+
     }
 
     private void openAction(AlarmAction alarmAction, ActionEditingMode mode) {
