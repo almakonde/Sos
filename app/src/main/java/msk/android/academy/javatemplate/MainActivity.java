@@ -1,7 +1,6 @@
 package msk.android.academy.javatemplate;
 
 import android.Manifest;
-import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,8 +11,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,9 +31,7 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
     private TextView addressText;
     private ImageView infoView;
 
-//    private Button mLocationButton;
     private TextView mLocationTextView;
-//    private ImageView mAndroidImageView;
     private FusedLocationProviderClient mFusedLocationClient;
     private AnimatorSet mRotateAnim;
     private boolean mTrackingLocation = false;
@@ -58,12 +53,7 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         setupUi();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-//        mRotateAnim = (AnimatorSet) AnimatorInflater.
-//                loadAnimator(this, R.animator.rotate) ;
-//        mLocationButton = (Button) findViewById(R.id.button_location);
         mLocationTextView = (TextView) findViewById(R.id.address_text);
-//        mAndroidImageView = (ImageView) findViewById(R.id.imageview_android);
-//        mRotateAnim.setTarget(mAndroidImageView);
         mLocationCalback = new LocationCallback(){
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -77,16 +67,6 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         } else {
             stopTrackingLocation();
         }
-//        mLocationButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (!mTrackingLocation){
-//                    startTrackingLocation();
-//                } else {
-//                    stopTrackingLocation();
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -148,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements FetchADressTask.O
         }
     }
     private void stopTrackingLocation() {
-//        mRotateAnim.cancel();
         mTrackingLocation = false;
         mFusedLocationClient.removeLocationUpdates(mLocationCalback);
     }
